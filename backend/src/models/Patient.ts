@@ -1,5 +1,6 @@
 import mongoose, { Schema, type InferSchemaType } from "mongoose";
 import { PATIENT_STATUSES, TRIAGE_LEVELS } from "@aegis/shared";
+import { InteractionSchema, MedicationSchema } from "./medicationSchemas.js";
 const VitalSignsSchema = new Schema({ heartRate: Number, respiratoryRate: Number, systolicBp: Number, diastolicBp: Number, oxygenSaturation: Number, temperatureC: Number, painScore: Number }, { _id: false });
 const TimelineSchema = new Schema({ event: { type: String, required: true }, from: String, to: String, reason: String, createdBy: { type: Schema.Types.ObjectId, ref: "User" }, createdAt: { type: Date, default: Date.now } }, { _id: false });
 const NoteSchema = new Schema({ text: { type: String, required: true, maxlength: 2000 }, author: { type: Schema.Types.ObjectId, ref: "User" }, createdAt: { type: Date, default: Date.now } }, { _id: true });
@@ -20,6 +21,9 @@ const PatientSchema = new Schema({
   assignedRoom: String,
   assignedStaff: [{ type: Schema.Types.ObjectId, ref: "User" }],
   ambulanceReport: { type: Schema.Types.ObjectId, ref: "AmbulanceReport" },
+  medications: [MedicationSchema],
+  medicationInteractions: [InteractionSchema],
+  intakeToken: { type: String, index: true, sparse: true },
   notes: [NoteSchema],
   timeline: [TimelineSchema]
 }, { timestamps: true });

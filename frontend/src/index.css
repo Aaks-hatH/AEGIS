@@ -1,2 +1,123 @@
-@tailwind base;@tailwind components;@tailwind utilities;
-:root{--background:210 30% 98%;--foreground:222 45% 11%;--muted:214 32% 91%;--border:214 32% 86%;--primary:205 84% 32%} .dark{--background:222 47% 7%;--foreground:210 40% 96%;--muted:217 33% 15%;--border:217 32% 19%;--primary:199 89% 48%} body{margin:0;background:hsl(var(--background));color:hsl(var(--foreground));font-feature-settings:"cv02","cv03","cv04","cv11"}.card{border:1px solid hsl(var(--border));background:rgba(255,255,255,.78);box-shadow:0 18px 60px rgba(15,23,42,.08)}.dark .card{background:rgba(15,23,42,.78);box-shadow:0 18px 60px rgba(0,0,0,.25)}.input{width:100%;border:1px solid hsl(var(--border));border-radius:.75rem;background:transparent;padding:.65rem .8rem;font-size:.875rem}.btn{border-radius:.75rem;padding:.65rem .9rem;font-weight:700;font-size:.875rem}.btn-primary{background:hsl(var(--primary));color:white}.btn-secondary{border:1px solid hsl(var(--border));background:rgba(148,163,184,.12)}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 222 47% 7%;
+  --foreground: 210 40% 96%;
+  --muted: 217 33% 15%;
+  --border: 217 32% 19%;
+  --primary: 199 89% 48%;
+}
+
+.light {
+  --background: 210 30% 98%;
+  --foreground: 222 45% 11%;
+  --muted: 214 32% 91%;
+  --border: 214 32% 86%;
+  --primary: 205 84% 32%;
+}
+
+body {
+  margin: 0;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--border)) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 999px;
+}
+
+.card {
+  border: 1px solid hsl(var(--border));
+  background: rgba(15, 23, 42, 0.78);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 4px 16px rgba(0, 0, 0, 0.08);
+  transition: border-color 150ms ease;
+}
+
+.card:hover {
+  border-color: hsl(var(--primary) / 0.4);
+}
+
+.light .card {
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.input {
+  width: 100%;
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.75rem;
+  background: transparent;
+  padding: 0.65rem 0.8rem;
+  font-size: 0.875rem;
+  transition: border-color 150ms ease;
+}
+
+.input:focus {
+  outline: 2px solid hsl(var(--primary));
+  outline-offset: 2px;
+  border-color: hsl(var(--primary) / 0.5);
+}
+
+.btn {
+  border-radius: 0.75rem;
+  padding: 0.65rem 0.9rem;
+  font-weight: 700;
+  font-size: 0.875rem;
+  transition: filter 150ms ease, opacity 150ms ease;
+}
+
+.btn-primary {
+  background: hsl(var(--primary));
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  filter: brightness(1.1);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  border: 1px solid hsl(var(--border));
+  background: rgba(148, 163, 184, 0.12);
+}
+
+.btn-danger {
+  background: rgb(220 38 38);
+  color: white;
+}
+
+.btn-danger:hover:not(:disabled) {
+  filter: brightness(1.1);
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border-radius: 9999px;
+  border: 1px solid hsl(var(--border));
+  padding: 0.125rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}

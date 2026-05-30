@@ -15,11 +15,12 @@ AEGIS, Adaptive Emergency Guidance and Intelligence System, is a full-stack emer
    - `cp backend/.env.example backend/.env`
    - `cp frontend/.env.example frontend/.env`
 2. Install dependencies with `npm install`.
-3. Start MongoDB locally or update `MONGODB_URI`.
-4. Seed data with `npm run seed`.
-5. Start both apps with `npm run dev`.
-
-Default seeded accounts use the password `AegisSecure123!`.
+3. Start MongoDB locally or set `MONGODB_URI` in `backend/.env` (Atlas works too).
+4. Create an admin user via the Settings page or MongoDB directly — the database starts empty.
+5. Start both apps (two terminals recommended on Windows):
+   - `cd backend && npm run dev`
+   - `cd frontend && npm run dev`
+6. Open http://localhost:5173
 
 ## Notes
 

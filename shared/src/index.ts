@@ -9,3 +9,23 @@ export interface AcuityFinding { factor: string; impact: number; rationale: stri
 export interface TriageResult { urgencyScore: number; priorityLevel: TriageLevel; riskClassification: string; conditionCategory: string; confidenceScore: number; recommendedRouting: string; suggestedNextAction: string; rationale: string; findings: AcuityFinding[]; }
 export interface AmbulanceAnalysis { conditionCategory: string; urgencyLevel: TriageLevel; suggestedTeams: string[]; equipmentChecklist: string[]; suggestedPlacement: string; expectedPathway: string; preparationNotes: string[]; rationale: string; confidenceScore: number; }
 export interface ApiResponse<T> { success: boolean; data: T; message?: string; meta?: Record<string, unknown>; }
+
+export interface Medication {
+  rxcui: string;
+  name: string;
+  dose?: string;
+  frequency?: string;
+}
+
+export interface DrugInteraction {
+  drug1: string;
+  drug2: string;
+  severity: "contraindicated" | "major" | "moderate" | "minor";
+  description: string;
+}
+
+export interface InteractionCheckResult {
+  medications: Medication[];
+  interactions: DrugInteraction[];
+  hasContraindications: boolean;
+}

@@ -1,0 +1,33 @@
+# AEGIS — single Render web service.
+# Serves the Express API and the built React frontend from one origin, so auth
+# cookies and API calls need no cross-site configuration.
+#
+# MongoDB is NOT included: Render no longer offers managed MongoDB. Create a free
+# MongoDB Atlas cluster and set MONGODB_URI in the Render dashboard.
+services:
+  - type: web
+    name: aegis
+    runtime: node
+    plan: free
+    region: oregon
+    # --include=dev because Render sets NODE_ENV=production, which would otherwise
+    # make `npm install` skip the devDependencies (tsc, vite) that the build needs.
+    buildCommand: npm install --include=dev && npm run build
+    startCommand: node backend/dist/server.js
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true        # Render generates a strong secret automatically
+      - key: JWT_EXPIRES_IN
+        value: 2h
+      - key: COOKIE_SECURE
+        value: "true"              # HTTPS on Render; pairs with SameSite=None
+      - key: VITE_API_URL
+        value: /api                # relative -> frontend calls the same origin
+      - key: MONGODB_URI
+        sync: false                # set in dashboard (MongoDB Atlas connection string)
+      - key: ANTHROPIC_API_KEY
+        sync: false                # optional; ACUITY runs on its rule engine if unset
