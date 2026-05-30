@@ -14,5 +14,8 @@ const UserSchema = new Schema({
 }, { timestamps: true });
 UserSchema.methods.verifyPassword = function(password: string) { return bcrypt.compare(password, this.passwordHash); };
 UserSchema.statics.hashPassword = function(password: string) { return bcrypt.hash(password, 12); };
-export type UserDocument = InferSchemaType<typeof UserSchema> & mongoose.Document & { verifyPassword(password: string): Promise<boolean> };
-export const User = mongoose.model("User", UserSchema);
+type UserRaw = InferSchemaType<typeof UserSchema>;
+type UserMethods = { verifyPassword(password: string): Promise<boolean> };
+type UserModelType = mongoose.Model<UserRaw, {}, UserMethods> & { hashPassword(password: string): Promise<string> };
+export type UserDocument = mongoose.HydratedDocument<UserRaw, UserMethods>;
+export const User = mongoose.model<UserRaw, UserModelType>("User", UserSchema);

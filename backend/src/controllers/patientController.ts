@@ -1,11 +1,20 @@
 import type { Request, Response } from "express";
+import { PATIENT_STATUSES } from "@aegis/shared";
 import { Patient } from "../models/Patient.js";
 import { TriageAssessment } from "../models/TriageAssessment.js";
 import { analyzeTriage } from "../services/acuityService.js";
 import { ensureQueueEntry, recalculateQueue } from "../services/queueService.js";
 import { audit } from "../services/auditService.js";
 import { created, HttpError, ok } from "../utils/http.js";
-export async function listPatients(req: Request, res: Response) { const q: any = {}; if (req.query.status) q.status = req.query.status; const patients = await Patient.find(q).sort({ updatedAt: -1 }).limit(200).populate("ambulanceReport"); return ok(res, patients); }
+export async function listPatients(req: Request, res: Response) {
+  const q: Record<string, unknown> = {};
+  if (req.query.status) {
+    const status = String(req.query.status);
+    if ((PATIENT_STATUSES as readonly string[]).includes(status)) q.status = status;
+  }
+  const patients = await Patient.find(q).sort({ updatedAt: -1 }).limit(200).populate("ambulanceReport");
+  return ok(res, patients);
+}
 export async function createPatient(req: Request, res: Response) { const result = analyzeTriage({ symptoms: req.body.symptoms, age: req.body.age, medicalHistory: req.body.medicalHistory, vitalSigns: req.body.vitalSigns, arrivalSource: req.body.arrivalSource }); const patient = await Patient.create({ ...req.body, triageStatus: result.priorityLevel, priorityScore: result.urgencyScore, timeline: [{ event: "patient_created", to: "waiting", reason: "Patient intake completed", createdBy: req.user?.id }] }); await TriageAssessment.create({ patient: patient._id, createdBy: req.user?.id, inputSnapshot: req.body, ...result }); await ensureQueueEntry(String(patient._id), req.user?.id); await audit(req, "patient_created", "patient", String(patient._id), { priority: result.priorityLevel }); return created(res, patient); }
 export async function getPatient(req: Request, res: Response) { const patient = await Patient.findById(req.params.id).populate("ambulanceReport assignedStaff notes.author"); if (!patient) throw new HttpError(404, "Patient not found"); const triage = await TriageAssessment.find({ patient: patient._id }).sort({ createdAt: -1 }); return ok(res, { patient, triage }); }
 export async function updatePatient(req: Request, res: Response) { const patient = await Patient.findByIdAndUpdate(req.params.id, { $set: req.body, $push: { timeline: { event: "patient_updated", reason: "Record updated", createdBy: req.user?.id } } }, { new: true }); if (!patient) throw new HttpError(404, "Patient not found"); await ensureQueueEntry(String(patient._id), req.user?.id); await audit(req, "patient_updated", "patient", String(patient._id)); return ok(res, patient); }

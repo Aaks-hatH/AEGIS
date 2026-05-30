@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { z } from "zod";
+import { intakeRateLimiter } from "../middleware/rateLimiters.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { validate } from "../middleware/validate.js";
 import { requireAuth, requirePermission } from "../middleware/auth.js";
@@ -10,7 +11,8 @@ import * as ambulance from "../controllers/ambulanceController.js";
 import * as triage from "../controllers/triageController.js";
 import * as analytics from "../controllers/analyticsController.js";
 import * as admin from "../controllers/adminController.js";
-import { ambulanceSchema, idParam, loginSchema, manualOverrideSchema, noteSchema, patientCreateSchema, patientUpdateSchema, statusSchema, triageSchema } from "../validation/schemas.js";
+import * as pharma from "../controllers/pharmaController.js";
+import { ambulanceSchema, idParam, intakeSchema, loginSchema, manualOverrideSchema, noteSchema, patientCreateSchema, patientUpdateSchema, pharmaInteractionSchema, statusSchema, triageSchema } from "../validation/schemas.js";
 const r = Router();
 r.post("/auth/login", validate(loginSchema), asyncHandler(auth.login));
 r.post("/auth/logout", requireAuth, asyncHandler(auth.logout));
@@ -47,4 +49,8 @@ r.get("/users", requireAuth, requirePermission("*"), asyncHandler(admin.listUser
 r.post("/users", requireAuth, requirePermission("*"), validate(z.object({ body: z.object({ name: z.string(), email: z.string().email(), password: z.string().min(12), role: z.string(), department: z.string().optional() }) })), asyncHandler(admin.createUser));
 r.patch("/users/:id/role", requireAuth, requirePermission("*"), asyncHandler(admin.setRole));
 r.patch("/users/:id/status", requireAuth, requirePermission("*"), asyncHandler(admin.setStatus));
+r.post("/pharma/intake/:token", intakeRateLimiter, validate(intakeSchema), asyncHandler(pharma.publicIntake));
+r.get("/pharma/search", asyncHandler(pharma.searchDrugs));
+r.post("/pharma/interactions", requireAuth, validate(pharmaInteractionSchema), asyncHandler(pharma.checkInteractions));
+r.post("/patients/:id/intake-link", requireAuth, requirePermission("patients:write"), asyncHandler(pharma.generateIntakeLink));
 export default r;
