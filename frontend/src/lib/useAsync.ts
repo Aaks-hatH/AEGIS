@@ -1,0 +1,2 @@
+import { useCallback, useEffect, useState } from "react";
+export function useAsync<T>(fn: () => Promise<T>, deps: unknown[] = []) { const [data, setData] = useState<T | null>(null); const [loading, setLoading] = useState(true); const [error, setError] = useState(""); const reload = useCallback(() => { setLoading(true); setError(""); return fn().then(setData).catch(e => setError(e.message)).finally(() => setLoading(false)); }, deps); useEffect(() => { reload(); }, [reload]); return { data, loading, error, reload }; }
